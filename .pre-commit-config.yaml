@@ -1,10 +1,8 @@
-# .pre-commit-config.yaml
 repos:
-- repo: local
-  hooks:
-    - id: commitizen-check
-      name: Commitizen check
-      entry: cz check --commit-msg-file
-      language: system
-      stages: [commit-msg]
-      pass_filenames: true
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.29.0
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
+      - id: commitizen-branch
+        stages: [pre-push]
