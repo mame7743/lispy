@@ -1,8 +1,8 @@
 import re
 from dataclasses import dataclass
-from encodings.punycode import T
 from enum import Enum
-from tkinter import NO, W
+from token import OP
+from typing import Union
 
 
 class TokenKind(Enum):
@@ -19,6 +19,76 @@ class Token:
 
     def __str__(self):
         return f"Token(\'{self.kind.value}\', \'{self.value}\')"
+
+
+class OperatorKind(Enum):
+    ADD = "+"
+    SUB = "-"
+    MUL = "*"
+    DIV = "/"
+
+class Operator:
+    kind: OperatorKind
+
+    def exec(self, arg: Object):
+        match self.kind:
+            case OperatorKind.ADD:
+                return self.add(arg)
+            case OperatorKind.SUB:
+                return self.sub(arg)
+            case OperatorKind.MUL:
+                return self.mul(arg)
+            case OperatorKind.DIV:
+                return self.div(arg)
+            case _:
+                raise RuntimeError(f"Unknown operator: {self.kind}")
+
+
+    def add(self, obj: Object):
+        sum = 0
+        while obj.kind != ObjectKind.NIL:
+            match obj.kind:
+                case ObjectKind.INTEGER:
+                    sum += obj.value
+                case _:
+                    break
+        return sum
+
+    def sub(self, obj: Object):
+        match obj.kind:
+            case ObjectKind.INTEGER:
+                return self.value - obj.value
+            case _:
+                raise RuntimeError(f"Invalid operand for -: {obj}")
+
+    def mul(self, a, b):
+        return a * b
+
+    def div(self, a, b):
+        return a / b
+
+class ObjectKind(Enum):
+    INTEGER = "INTEGER"
+    SYMBOL = "SYMBOL"
+    OPERATOR = "OPERATOR"
+    CONS = "CONS"
+    NIL = "NIL"
+
+@dataclass
+class Cons:
+    car: 'Object'
+    cdr: 'Object'
+
+    def __str__(self):
+        return f"Cons(car={self.car}, cdr={self.cdr})"
+
+
+@dataclass
+class Object:
+    kind: ObjectKind
+    value: Union[int, str, Cons, Operator, None]
+
+
 
 def tokenize(code : str) -> list[Token]:
 
@@ -75,49 +145,51 @@ def parse(tokens):
         case TokenKind.LPAREN:
             return parse(tokens)
         case TokenKind.RPAREN:
-            return None
+            return Object(ObjectKind.NIL, None)
         case TokenKind.INTEGER:
-            return int(token.value), parse(tokens)
+            car = Object(ObjectKind.INTEGER, int(token.value))
+            cdr = parse(tokens)
+            return Object(ObjectKind.CONS, Cons(car, cdr))
         case TokenKind.SYMBOL:
-            return token.value, parse(tokens)
+            car = Object(ObjectKind.SYMBOL, token.value)
+            cdr = parse(tokens)
+            return Object(ObjectKind.CONS, Cons(car, cdr))
         case _:
             raise RuntimeError(f"Unexpected token: {token}")
 
 
-def eval(expr):
+def eval(expr: Object):
 
-    if expr is None:
-        return None
+    if not expr:
+        return Object(ObjectKind.NIL, None)
 
-    car = expr['car']
-    cdr = expr['cdr']
+    match expr.kind:
+        case ObjectKind.INTEGER:
+            return expr
+        case ObjectKind.SYMBOL:
+            return expr
+        case ObjectKind.NIL:
+            return expr
+        case ObjectKind.OPERATOR:
+            return expr
+        case ObjectKind.CONS:
+            car = expr.value.car
+            cdr = expr.value.cdr
 
-    if type(car) is dict:
-        expr = eval(cdr)
-        print("car:", car)
-        if expr is None:
-            return None
-        # elif car['kind'] == "OPERATOR":
-        #     if car['value'] == '+':
-        #         return add_expr(cdr)
-        #     if car['value'] == '-':
-        #         return eval(cdr) - eval(cdr[1])
-        #     if car['value'] == '*':
-        #         return eval(cdr) * eval(cdr[1])
-        #     if car['value'] == '/':
-        #         return eval(cdr) / eval(cdr[1])
-        else:
-            return None
-        
-    else:
-        
-        if car['kind'] == "SYMBOL":
-            return car['value']
-        if car['kind'] == "FLOAT":
-            return car['value']
-        if car['kind'] == "INTEGER":
-            return car['value']
-    return None
+            # ここで関数適用を処理
+            func = eval(car)
+            if func is None:
+                return Object(ObjectKind.NIL, None)
+
+            # ここで引数を評価
+            arg = eval(cdr)
+            if arg is None:
+                return Object(ObjectKind.NIL, None)
+
+            if func.kind == ObjectKind.OPERATOR:
+                match func.value.kind:
+                    case OperatorKind.ADD:
+
 
 def run(code):
     tokens = tokenize(code)
