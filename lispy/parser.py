@@ -1,8 +1,7 @@
 """
-LISP interpreter parser module.
+LISPインタープリターのパーサーモジュール
 
-This module provides parsing functionality to convert tokens into
-abstract syntax trees (S-expressions).
+トークンをS式に変換する
 """
 
 from typing import Any
@@ -11,22 +10,11 @@ from .tokenizer import Token, TokenKind
 
 
 class ParseError(Exception):
-    """Raised when parsing fails."""
+    """パースエラー"""
 
 
 def parse(tokens: list[Token]) -> list[Any]:
-    """
-    Parse tokens into S-expressions.
-
-    Args:
-        tokens: List of tokens to parse
-
-    Returns:
-        List of parsed S-expressions
-
-    Raises:
-        ParseError: If parsing fails
-    """
+    """トークンリストをS式リストに変換"""
     if not tokens:
         return []
 
@@ -41,54 +29,26 @@ def parse(tokens: list[Token]) -> list[Any]:
 
 
 def parse_expression(tokens: list[Token], start: int) -> tuple[Any, int]:
-    """
-    Parse a single expression starting at the given index.
-
-    Args:
-        tokens: List of tokens
-        start: Starting index
-
-    Returns:
-        Tuple of (parsed_expression, next_index)
-
-    Raises:
-        ParseError: If parsing fails
-    """
+    """単一の式をパースする"""
     if start >= len(tokens):
         raise ParseError("Unexpected end of input")
 
     token = tokens[start]
 
     if token.kind == TokenKind.LPAREN:
-        # Parse list expression
         return parse_list(tokens, start + 1)
     elif token.kind == TokenKind.INTEGER:
-        # Parse integer
         return int(token.value), start + 1
     elif token.kind == TokenKind.OPERATOR:
-        # Parse operator as symbol
         return token.value, start + 1
     elif token.kind == TokenKind.SYMBOL:
-        # Parse symbol
         return token.value, start + 1
     else:
         raise ParseError(f"Unexpected token: {token}")
 
 
 def parse_list(tokens: list[Token], start: int) -> tuple[list[Any], int]:
-    """
-    Parse a list expression starting after the opening parenthesis.
-
-    Args:
-        tokens: List of tokens
-        start: Starting index (after LPAREN)
-
-    Returns:
-        Tuple of (parsed_list, next_index)
-
-    Raises:
-        ParseError: If parsing fails
-    """
+    """リスト式をパースする（開き括弧の後から）"""
     elements = []
     i = start
 
@@ -99,5 +59,4 @@ def parse_list(tokens: list[Token], start: int) -> tuple[list[Any], int]:
     if i >= len(tokens):
         raise ParseError("Missing closing parenthesis")
 
-    # Skip the closing parenthesis
     return elements, i + 1
