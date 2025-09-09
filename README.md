@@ -1,6 +1,63 @@
-# lispy
+# LISPY
+
+A simple LISP interpreter implemented in Python.
 
 LISPのS式をPythonで解釈するインタプリタを作成するプロジェクトです。
+
+## Installation
+
+```bash
+pip install -e .
+```
+
+## Usage
+
+### Command Line
+```bash
+lispy
+```
+
+### Python Module
+```python
+from lispy import repl
+repl()
+```
+
+## Development
+
+### Setup
+```bash
+# Install development dependencies
+pip install -e ".[dev]"
+
+# Install pre-commit hooks
+pre-commit install
+```
+
+### Testing
+```bash
+# Run tests
+python -m pytest tests/
+
+# Run with unittest
+python -m unittest discover tests/
+```
+
+### Project Structure
+```
+lispy/
+├── lispy/              # Main package
+│   ├── __init__.py
+│   ├── tokenizer.py    # Tokenization
+│   ├── lisp_parser.py  # Parsing
+│   ├── evaluator.py    # Evaluation
+│   └── lispy.py        # Main logic
+├── tests/              # Test suite
+│   ├── __init__.py
+│   └── test_tokenizer.py
+├── main.py             # Development entry point
+└── pyproject.toml      # Project configuration
+```
 
 ## 実装
 
@@ -16,3 +73,12 @@ LISPのS式をPythonで解釈するインタプリタを作成するプロジェ
 
 期待される出力
 - 整数 `3`
+
+## Features
+
+- [x] Tokenization
+- [ ] Parsing
+- [ ] Evaluation
+- [ ] Built-in functions
+- [ ] Variable binding
+- [ ] Function definition

@@ -1,7 +1,0 @@
-[tool.commitizen]
-name = "cz_customize"
-version = "0.1.0"
-
-[tool.commitizen.customize]
-# .cz-config.jsの絵文字パターンと一致するように設定
-schema_pattern = "^(✨ feat|🐛 fix|📝 docs|🎨 style|♻️ refactor|🚀 perf|🧪 test|🔨 chore|🔧 ci|🎉 init)(\\([^)]+\\))?: .+"
