@@ -15,10 +15,15 @@ def run(code):
     print("tokens:", [str(token) for token in tokens])
     s_expr = parse(tokens)
     print("s_expr:", [str(d) for d in s_expr])
-    result = eval_lisp(s_expr)
-    print("result:", result)
-    # テストのために結果を返すが、実装は意図的に不完全
-    return result
+
+    # 各式を評価
+    results = []
+    for expr in s_expr:
+        result = eval_lisp(expr)
+        results.append(result)
+
+    print("result:", results)
+    return results
 
 
 def repl():
