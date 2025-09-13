@@ -15,6 +15,7 @@ class TokenKind(Enum):
     LPAREN = "LPAREN"
     RPAREN = "RPAREN"
     INTEGER = "INTEGER"
+    STRING = "STRING"
     OPERATOR = "OPERATOR"
     SYMBOL = "SYMBOL"
 
@@ -32,13 +33,13 @@ class Token:
 def tokenize(code: str) -> list[Token]:
     """
     Tokenize LISP source code into tokens.
-    
+
     Args:
         code: The LISP source code string to tokenize
-        
+
     Returns:
         A list of Token objects representing the tokenized code
-        
+
     Raises:
         RuntimeError: If an unexpected character is encountered
     """
@@ -46,7 +47,8 @@ def tokenize(code: str) -> list[Token]:
         "LPAREN":     r"\(",
         "RPAREN":     r"\)",
         "INTEGER":    r"[0-9]+",
-        "OPERATOR":   r"[+\-*/]",
+        "OPERATOR":   r"[+\-*/%=<>]|<=|>=",
+        "STRING":     r'"(\\.|[^"\\])*"',
         "SYMBOL":     r"[a-zA-Z_][a-zA-Z0-9_]*",
         "WHITESPACE": r"\s+",
         "NEWLINE":    r"\n",
@@ -71,6 +73,8 @@ def tokenize(code: str) -> list[Token]:
                 tokens.append(Token(TokenKind.INTEGER, value))
             case "OPERATOR":
                 tokens.append(Token(TokenKind.OPERATOR, value))
+            case "STRING":
+                tokens.append(Token(TokenKind.STRING, value))
             case "SYMBOL":
                 tokens.append(Token(TokenKind.SYMBOL, value))
             case "WHITESPACE" | "NEWLINE":

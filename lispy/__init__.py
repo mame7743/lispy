@@ -6,7 +6,6 @@ tokenization, parsing, evaluation, and REPL functionality.
 """
 
 from .evaluator import eval_lisp
-from .lispy import repl, run
 from .parser import parse
 from .tokenizer import Token, TokenKind, tokenize
 
@@ -18,11 +17,10 @@ __all__ = [
     'tokenize',
     'parse',
     'eval_lisp',
-    'run',
-    'repl'
 ]
 
 
 def main():
     """Main entry point for the CLI."""
-    repl()
+    from .lispy import main as lispy_main
+    lispy_main()

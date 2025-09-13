@@ -194,6 +194,9 @@ wheels = [
 name = "lispy"
 version = "0.1.0"
 source = { editable = "." }
+dependencies = [
+    { name = "prompt-toolkit" },
+]
 
 [package.optional-dependencies]
 dev = [
@@ -208,6 +211,7 @@ requires-dist = [
     { name = "black", marker = "extra == 'dev'", specifier = ">=25.1.0" },
     { name = "commitizen", marker = "extra == 'dev'", specifier = ">=4.8.3" },
     { name = "flake8", marker = "extra == 'dev'", specifier = ">=7.3.0" },
+    { name = "prompt-toolkit", specifier = ">=3.0.52" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
 ]
 

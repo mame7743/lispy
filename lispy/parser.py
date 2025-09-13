@@ -39,6 +39,9 @@ def parse_expression(tokens: list[Token], start: int) -> tuple[Any, int]:
         return parse_list(tokens, start + 1)
     elif token.kind == TokenKind.INTEGER:
         return int(token.value), start + 1
+    elif token.kind == TokenKind.STRING:
+        # 文字列リテラルをタプルで包んで区別
+        return ('STRING_LITERAL', token.value[1:-1]), start + 1
     elif token.kind == TokenKind.OPERATOR:
         return token.value, start + 1
     elif token.kind == TokenKind.SYMBOL:
