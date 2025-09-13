@@ -27,4 +27,10 @@ BUILTINS = {
         list(range(start, end) if end is not None else range(start))
     ),
     'length': len,
+    'map': lambda func, lst: [func(x) for x in lst],
+    'filter': lambda func, lst: [x for x in lst if func(x)],
+    'list': lambda *args: list(args),
+    'and': lambda a, b: a and b,
+    'or': lambda a, b: a or b,
+    'not': lambda x: not x,
 }

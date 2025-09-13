@@ -76,6 +76,71 @@ def eval_lisp(expr: Any, env: Optional[Environment] = None) -> Any:
             else:
                 return eval_lisp(expr[3], env)
 
+        elif expr[0] == 'let':
+            # (let ((var1 val1) (var2 val2) ...) body)
+            if len(expr) < 3:
+                raise ValueError("let式は最低3つの要素が必要です")
+
+            # 新しい環境を作成
+            new_env = Environment(parent=env)
+
+            # 変数束縛を処理
+            bindings = expr[1]
+            for binding in bindings:
+                if len(binding) != 2:
+                    raise ValueError("letの束縛は [変数名 値] の形式が必要です")
+                var_name, var_value = binding
+                new_env.define(var_name, eval_lisp(var_value, env))
+
+            # 本体を新しい環境で評価
+            result = None
+            for body_expr in expr[2:]:
+                result = eval_lisp(body_expr, new_env)
+            return result
+
+        elif expr[0] == 'for':
+            # (for var start end body)
+            if len(expr) != 5:
+                raise ValueError("for式は5つの要素が必要です: (for var start end body)")
+
+            var_name = expr[1]
+            start_val = eval_lisp(expr[2], env)
+            end_val = eval_lisp(expr[3], env)
+            body = expr[4]
+
+            # 新しい環境を作成
+            new_env = Environment(parent=env)
+
+            result = None
+            for i in range(start_val, end_val + 1):
+                new_env.define(var_name, i)
+                result = eval_lisp(body, new_env)
+            return result
+
+        elif expr[0] == 'lambda':
+            # (lambda (param1 param2 ...) body)
+            if len(expr) != 3:
+                raise ValueError("lambda式は3つの要素が必要です: (lambda (params) body)")
+
+            params = expr[1]
+            body = expr[2]
+
+            def lambda_func(*args):
+                if len(args) != len(params):
+                    expected, actual = len(params), len(args)
+                    raise ValueError(f"引数の数が一致しません: 期待値{expected}, 実際{actual}")
+
+                # 新しい環境を作成
+                func_env = Environment(parent=env)
+
+                # パラメータを束縛
+                for param, arg in zip(params, args):
+                    func_env.define(param, arg)
+
+                return eval_lisp(body, func_env)
+
+            return lambda_func
+
         # 通常の関数呼び出し
         func = eval_lisp(expr[0], env)
 
