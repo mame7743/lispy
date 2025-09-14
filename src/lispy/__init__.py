@@ -17,6 +17,7 @@ __all__ = [
     'tokenize',
     'parse',
     'eval_lisp',
+    'main',
 ]
 
 

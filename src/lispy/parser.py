@@ -35,25 +35,26 @@ def parse_expression(tokens: list[Token], start: int) -> tuple[Any, int]:
 
     token = tokens[start]
 
-    if token.kind == TokenKind.LPAREN:
-        return parse_list(tokens, start + 1)
-    elif token.kind == TokenKind.INTEGER:
-        return int(token.value), start + 1
-    elif token.kind == TokenKind.STRING:
-        # 文字列リテラルをタプルで包んで区別
-        return ('STRING_LITERAL', token.value[1:-1]), start + 1
-    elif token.kind == TokenKind.OPERATOR:
-        return token.value, start + 1
-    elif token.kind == TokenKind.SYMBOL:
-        return token.value, start + 1
-    else:
-        raise ParseError(f"Unexpected token: {token}")
+    match token.kind:
+        case TokenKind.LPAREN:
+            return parse_list(tokens, start + 1)
+        case TokenKind.INTEGER:
+            return int(token.value), start + 1
+        case TokenKind.STRING:
+            # 文字列リテラルをタプルで包んで区別
+            return ('STRING_LITERAL', token.value[1:-1]), start + 1
+        case TokenKind.OPERATOR:
+            return token.value, start + 1
+        case TokenKind.SYMBOL:
+            return token.value, start + 1
+        case _:
+            raise ParseError(f"Unexpected token: {token}")
 
 
 def parse_list(tokens: list[Token], start: int) -> tuple[list[Any], int]:
     """リスト式をパースする（開き括弧の後から）"""
     elements = []
-    i = start
+    i: int = start
 
     while i < len(tokens) and tokens[i].kind != TokenKind.RPAREN:
         expr, i = parse_expression(tokens, i)
